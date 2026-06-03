@@ -89,7 +89,13 @@ def run_app():
     import os
     app = QApplication(sys.argv)
     
-    style_path = os.path.join(os.path.dirname(__file__), 'style.qss')
+    # PyInstaller --onefile mode support
+    if hasattr(sys, '_MEIPASS'):
+        base_dir = os.path.join(sys._MEIPASS, 'omron_fins_tester', 'gui')
+    else:
+        base_dir = os.path.dirname(__file__)
+        
+    style_path = os.path.join(base_dir, 'style.qss')
     if os.path.exists(style_path):
         with open(style_path, 'r', encoding='utf-8') as f:
             app.setStyleSheet(f.read())

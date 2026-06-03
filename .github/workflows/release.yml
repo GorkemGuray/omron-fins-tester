@@ -34,18 +34,13 @@ jobs:
 
       - name: Build executable
         run: |
-          # PyQt uygulamaları için --onedir (klasör) daha hızlı açılır, --windowed ise konsol penceresini gizler.
+          # PyQt uygulamaları için --onefile (tek dosya) kullanıyoruz. --windowed ise konsol penceresini gizler.
           # --paths src ile Python yollarını belirtiyoruz ki modüller bulunabilsin.
           # style.qss dosyasını da paket içerisine dahil ediyoruz.
-          uv run pyinstaller --noconfirm --onedir --windowed --paths src --add-data "src/omron_fins_tester/gui/style.qss;omron_fins_tester/gui" --name "OmronFinsTester" src/omron_fins_tester/main.py
-
-      - name: Archive build
-        run: |
-          # Oluşturulan dosyaları ZIP formatında sıkıştır
-          Compress-Archive -Path dist/OmronFinsTester/* -DestinationPath OmronFinsTester-Windows.zip
+          uv run pyinstaller --noconfirm --onefile --windowed --paths src --add-data "src/omron_fins_tester/gui/style.qss;omron_fins_tester/gui" --name "OmronFinsTester" src/omron_fins_tester/main.py
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: OmronFinsTester-Windows.zip
+          files: dist/OmronFinsTester.exe
           generate_release_notes: true
