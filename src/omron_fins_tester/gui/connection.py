@@ -4,7 +4,7 @@ from PyQt6.QtCore import pyqtSignal
 
 class ConnectionPanel(QWidget):
     # Signals to communicate with the main app
-    connect_requested = pyqtSignal(str, int, int, int, int, int) # IP, Port, DestNode, SrcNode, DestNet, SrcNet
+    connect_requested = pyqtSignal(str, int, int, int, int, int, str) # IP, Port, DestNode, SrcNode, DestNet, SrcNet, Protocol
     disconnect_requested = pyqtSignal()
 
     def __init__(self):
@@ -18,6 +18,13 @@ class ConnectionPanel(QWidget):
         group_box = QGroupBox("Bağlantı Ayarları")
         group_layout = QHBoxLayout()
         group_box.setLayout(group_layout)
+
+        # Protocol
+        group_layout.addWidget(QLabel("Protokol:"))
+        self.protocol_combo = QComboBox()
+        self.protocol_combo.addItems(["UDP", "TCP"])
+        self.protocol_combo.setFixedWidth(60)
+        group_layout.addWidget(self.protocol_combo)
 
         # IP Address
         group_layout.addWidget(QLabel("IP:"))
@@ -65,17 +72,19 @@ class ConnectionPanel(QWidget):
         port_str = self.port_input.text().strip()
         dn_str = self.dest_node_input.text().strip()
         sn_str = self.src_node_input.text().strip()
+        protocol = self.protocol_combo.currentText()
 
         if not ip or not port_str.isdigit() or not dn_str.isdigit() or not sn_str.isdigit():
             QMessageBox.warning(self, "Hata", "Lütfen geçerli IP, Port ve Node değerleri girin.")
             return
 
-        self.connect_requested.emit(ip, int(port_str), int(dn_str), int(sn_str), 0, 0)
+        self.connect_requested.emit(ip, int(port_str), int(dn_str), int(sn_str), 0, 0, protocol)
 
     def on_disconnect_clicked(self):
         self.disconnect_requested.emit()
 
     def set_connected_state(self, is_connected: bool):
+        self.protocol_combo.setEnabled(not is_connected)
         self.ip_input.setEnabled(not is_connected)
         self.port_input.setEnabled(not is_connected)
         self.dest_node_input.setEnabled(not is_connected)

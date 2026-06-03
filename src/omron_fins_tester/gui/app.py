@@ -8,7 +8,7 @@ from omron_fins_tester.gui.variables import VariablesPanel
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Omron FINS Tester (UDP)")
+        self.setWindowTitle("Omron FINS Tester")
         self.resize(800, 600)
 
         self.client = OmronFinsClient()
@@ -37,8 +37,8 @@ class MainWindow(QMainWindow):
         # Disable vars panel initially
         self.var_panel.setEnabled(False)
 
-    def handle_connect(self, ip: str, port: int, dest_node: int, src_node: int, dest_net: int, src_net: int):
-        success, msg = self.client.connect(ip, port, dest_node, src_node, dest_net, src_net)
+    def handle_connect(self, ip: str, port: int, dest_node: int, src_node: int, dest_net: int, src_net: int, protocol: str):
+        success, msg = self.client.connect(ip, port, dest_node, src_node, dest_net, src_net, protocol)
         if success:
             self.conn_panel.set_connected_state(True)
             self.var_panel.setEnabled(True)

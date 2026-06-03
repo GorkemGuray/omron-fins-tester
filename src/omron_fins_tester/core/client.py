@@ -6,24 +6,34 @@ logger = logging.getLogger(__name__)
 
 class OmronFinsClient:
     def __init__(self):
-        self.client: Optional[UDPFinsConnection] = None
+        self.client: Optional[Any] = None
         self.ip_address = ""
         self.port = 9600
         self.connected = False
 
-    def connect(self, ip_address: str, port: int = 9600, dest_node: int = 0, src_node: int = 0, dest_net: int = 0, src_net: int = 0) -> Tuple[bool, str]:
+    def connect(self, ip_address: str, port: int = 9600, dest_node: int = 0, src_node: int = 0, dest_net: int = 0, src_net: int = 0, protocol: str = "UDP") -> Tuple[bool, str]:
         try:
-            self.client = UDPFinsConnection()
-            self.client.connect(ip_address, port=port)
-            self.client.dest_node_add = dest_node
-            self.client.srce_node_add = src_node
-            self.client.dest_net_add = dest_net
-            self.client.srce_net_add = src_net
+            if protocol == "TCP":
+                from fins.tcp import TCPFinsConnection
+                self.client = TCPFinsConnection()
+                self.client.connect(ip_address, port=port)
+            else:
+                self.client = UDPFinsConnection()
+                self.client.connect(ip_address, port=port)
+
+            if dest_node != 0:
+                self.client.dest_node_add = dest_node
+            if src_node != 0:
+                self.client.srce_node_add = src_node
+            if dest_net != 0:
+                self.client.dest_net_add = dest_net
+            if src_net != 0:
+                self.client.srce_net_add = src_net
             
             self.ip_address = ip_address
             self.port = port
             self.connected = True
-            logger.info(f"Connected to {ip_address}:{port} (DestNode={dest_node}, SrcNode={src_node})")
+            logger.info(f"Connected to {ip_address}:{port} over {protocol} (DestNode={self.client.dest_node_add}, SrcNode={self.client.srce_node_add})")
             return True, "Connected successfully"
         except Exception as e:
             self.connected = False
@@ -33,7 +43,11 @@ class OmronFinsClient:
 
     def disconnect(self):
         if self.client:
-            # UDP is stateless, but we can clear the object
+            if hasattr(self.client, 'fins_socket') and self.client.fins_socket:
+                try:
+                    self.client.fins_socket.close()
+                except Exception:
+                    pass
             del self.client
             self.client = None
         self.connected = False

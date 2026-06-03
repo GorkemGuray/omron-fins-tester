@@ -1,12 +1,12 @@
 # Omron FINS Tester
 
-Omron FINS Tester, endüstriyel otomasyon mühendisleri için geliştirilmiş profesyonel ve arayüz (GUI) tabanlı bir Python uygulamasıdır. Omron PLC'leri üzerinde FINS UDP protokolünü kullanarak değişken okuma ve yazma işlemlerini yapmak için tasarlanmıştır.
+Omron FINS Tester, endüstriyel otomasyon mühendisleri için geliştirilmiş profesyonel ve arayüz (GUI) tabanlı bir Python uygulamasıdır. Omron PLC'leri üzerinde FINS UDP ve FINS TCP protokollerini kullanarak değişken okuma ve yazma işlemlerini yapmak için tasarlanmıştır.
 
 Python, PyQt6 ve `fins` kütüphanesi ile inşa edilen bu araç; PLC IDE'lerinin ağır ve yavaş arayüzlerine kıyasla PLC belleğinin hızlıca test edilmesi, hata ayıklanması (debugging) ve sürekli olarak izlenmesi (monitoring) için hafif ve son derece hızlı bir alternatif sunar.
 
 ## Özellikler
 
-- 🔌 **FINS Protokolü Desteği**: Ağ yönlendirme (Destination Node/Net, Source Node/Net) parametreleriyle tam uyumlu, sağlam UDP FINS haberleşmesi.
+- 🔌 **FINS UDP ve TCP Desteği**: İsteğe bağlı seçilebilen UDP ve TCP protokolleri. Ağ yönlendirme (Destination Node/Net, Source Node/Net) ve FINS TCP Düğüm Anlaşması (Handshake) ile tam uyumlu, sağlam haberleşme altyapısı.
 - 🎨 **Endüstriyel Karanlık Tema (Dark Mode)**: Sysmac Studio ve VS Code gibi profesyonel yazılımlardan ilham alan, gözü yormayan modern arayüz tasarımı.
 - ⏱️ **Otomatik Okuma (Auto-Read)**: Özelleştirilebilir milisaniye bazlı periyotlarla birden fazla değişkenin durumunu canlı olarak izleme yeteneği.
 - ⚡ **Hızlı Veri Düzenleme (Inline Editing)**: 
@@ -35,7 +35,8 @@ Bu proje, bağımlılık (dependency) yönetimi için oldukça hızlı olan `uv`
 
 1. **Bağlantı Ayarları**: 
    - PLC'nizin IP adresini girin (Örn: `192.168.250.1`).
-   - `Dest Node` kısmına PLC IP'sinin son hanesini, `Src Node` kısmına ise kendi bilgisayarınızın IP'sinin son hanesini girin.
+   - Haberleşme için kullanacağınız **Protokolü** (`UDP` veya `TCP`) seçin.
+   - `Dest Node` kısmına PLC IP'sinin son hanesini, `Src Node` kısmına ise kendi bilgisayarınızın IP'sinin son hanesini girin (TCP için `0` bırakırsanız program bu değerleri PLC'den otomatik alır).
    - **Bağlan** butonuna tıklayın.
 2. **Değişken Ekleme**:
    - İlgili Bellek Alanını (Memory Area) seçin (Örn: Data Memory için `D`, CIO için `C`, Work için `W`, Holding için `H`).
@@ -51,7 +52,7 @@ Bu proje, bağımlılık (dependency) yönetimi için oldukça hızlı olan `uv`
 - `src/omron_fins_tester/main.py`: Uygulamanın başlatıldığı ana dosya.
 - `src/omron_fins_tester/gui/`: Tüm PyQt6 arayüz (UI) kodlarını içerir (`app.py`, `connection.py`, `variables.py`).
 - `src/omron_fins_tester/gui/style.qss`: Uygulamanın karanlık temasını yöneten CSS dosyası.
-- `src/omron_fins_tester/core/client.py`: UDP FINS işlemlerini, veri tipi dönüştürmelerini (bytes -> float vb.) ve protokol hatalarını (End Code) denetleyen ana istemci (client) yöneticisidir.
+- `src/omron_fins_tester/core/client.py`: UDP/TCP FINS işlemlerini, TCP handshake süreçlerini, güvenli soket kapatmayı, veri tipi dönüştürmelerini (bytes -> float vb.) ve protokol hatalarını (End Code) denetleyen ana istemci (client) yöneticisidir.
 
 ## Lisans
 
