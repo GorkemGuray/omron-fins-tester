@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-                               QLineEdit, QPushButton, QGroupBox, QMessageBox)
+                               QLineEdit, QPushButton, QGroupBox, QMessageBox, QComboBox)
 from PyQt6.QtCore import pyqtSignal
 
 class ConnectionPanel(QWidget):
