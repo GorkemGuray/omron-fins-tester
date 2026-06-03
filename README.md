@@ -49,6 +49,21 @@ Bu proje, bağımlılık (dependency) yönetimi için oldukça hızlı olan `uv`
    - Anlık okuma için satırdaki **Oku** butonunu kullanabilir veya tabloyu canlı izlemek için **Otomatik Okuma** kutucuğunu işaretleyebilirsiniz.
    - Veri yazmak için "Değiştir" sütununa değeri girip **Enter** tuşuna basmanız yeterlidir. Bit değerlerini kontrol etmek için ise doğrudan `TRUE` veya `FALSE` butonlarına tıklayabilirsiniz.
 
+## Sürüm Oluşturma (Release)
+
+Projede yer alan GitHub Actions mekanizması sayesinde Windows için çalıştırılabilir (executable) sürümler otomatik olarak oluşturulabilir. Yeni bir sürüm yayınlamak için GitHub deponuza `v` ile başlayan bir tag (etiket) göndermeniz yeterlidir:
+
+1. Değişikliklerinizi yapıp GitHub'a yükleyin.
+2. Yeni bir versiyon etiketi oluşturun:
+   ```bash
+   git tag v1.0.0
+   ```
+3. Etiketi uzak sunucuya gönderin:
+   ```bash
+   git push origin v1.0.0
+   ```
+Bu işlemlerin ardından GitHub deponuzdaki **Actions** sekmesinden derleme sürecini takip edebilirsiniz. Süreç tamamlandığında uygulamanın Windows (exe) hali ZIP olarak projenizin **Releases** sekmesine otomatik olarak eklenecektir.
+
 ## Mimari ve Kod Yapısı
 
 - `src/omron_fins_tester/main.py`: Uygulamanın başlatıldığı ana dosya.

@@ -16,10 +16,14 @@ class OmronFinsClient:
             if protocol == "TCP":
                 from fins.tcp import TCPFinsConnection
                 self.client = TCPFinsConnection()
-                self.client.connect(ip_address, port=port)
+                self.client.connect(ip_address, port=port, connection_timeout=2.0)
             else:
                 self.client = UDPFinsConnection()
                 self.client.connect(ip_address, port=port)
+
+            # Set short timeout to prevent UI freezes
+            if hasattr(self.client, 'fins_socket'):
+                self.client.fins_socket.settimeout(2.0)
 
             if dest_node != 0:
                 self.client.dest_node_add = dest_node
@@ -29,6 +33,11 @@ class OmronFinsClient:
                 self.client.dest_net_add = dest_net
             if src_net != 0:
                 self.client.srce_net_add = src_net
+            
+            # For UDP, the socket connects immediately even if PLC is offline.
+            # We must send a ping command to verify the PLC is reachable and nodes are correct.
+            if protocol == "UDP":
+                self.client.cpu_unit_status_read()
             
             self.ip_address = ip_address
             self.port = port

@@ -1,0 +1,50 @@
+name: Build and Release Windows Executable
+
+on:
+  push:
+    tags:
+      - 'v*' # Sadece 'v' ile başlayan tag'lerde çalışır (örn: v1.0.0)
+
+permissions:
+  contents: write # Release oluşturabilmek için gerekli
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install dependencies
+        run: |
+          uv sync
+          uv pip install pyinstaller
+
+      - name: Build executable
+        run: |
+          # PyQt uygulamaları için --onedir (klasör) daha hızlı açılır, --windowed ise konsol penceresini gizler.
+          # style.qss dosyasını da paket içerisine dahil ediyoruz.
+          uv run pyinstaller --noconfirm --onedir --windowed --add-data "src/omron_fins_tester/gui/style.qss;omron_fins_tester/gui" --name "OmronFinsTester" src/omron_fins_tester/main.py
+
+      - name: Archive build
+        run: |
+          # Oluşturulan dosyaları ZIP formatında sıkıştır
+          Compress-Archive -Path dist/OmronFinsTester/* -DestinationPath OmronFinsTester-Windows.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: OmronFinsTester-Windows.zip
+          generate_release_notes: true
