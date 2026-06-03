@@ -4,8 +4,13 @@ Welcome! If you are an AI assistant or a human developer contributing to this pr
 
 ## 1. Project Philosophy & UI Design
 - **Industrial Look & Feel**: The UI is designed to feel like professional industrial software (e.g., Omron Sysmac Studio, TIA Portal, or VS Code). 
-- **Dark Mode**: All styling should respect the dark mode palette defined in `src/omron_fins_tester/gui/style.qss`. If adding new widgets, ensure they blend well with `#1e1e1e` backgrounds and `#e0e0e0` text.
+- **Dark Mode & Styling**: All styling should respect the dark mode palette defined in `src/omron_fins_tester/gui/style.qss`. Custom dark scrollbars and inline SVG data URI chevrons for combo boxes are configured there to keep a modern theme.
 - **Minimalism & Ergonomics**: We removed unnecessary UI clutter (like the "Write" button in favor of the `Enter` key for text fields and `TRUE/FALSE` buttons for Booleans). Maintain this UX paradigm when adding new features.
+- **Table Cell Sizing & Row Spacing**: When inserting cell widgets (like QComboBox, buttons, or custom QWidgets) inside `QTableWidget`, make sure to set an appropriate row height (e.g., `self.table.verticalHeader().setDefaultSectionSize(36)`) to prevent vertical clipping of inner texts. Sizable columns (like Type, Format, Delete buttons) should have fixed or interactive default widths to prevent dynamic shifting of columns.
+- **Status Badges & Color Semantics**: Important connection states and boolean read values should be styled as colored rounded badges (border-radius, padding, background, and border). Use clear industrial color schemes:
+  - Active / True / Connected: Green badge (`#1b5e20` background, `#c8e6c9` text, `#2e7d32` border).
+  - Inactive / False / Disconnected: Red badge (`#b71c1c` background, `#ffcdd2` text, `#d32f2f` border).
+  - Waiting / Polling: Orange badge (`#e65100` background, `#ffe0b2` text, `#f57c00` border).
 
 ## 2. Architecture Patterns
 - **PyQt6 Event Loop**: All UI interactions run via PyQt6. Do not implement blocking operations in the UI thread. Use `QTimer` for polling (`variables.py`), not `time.sleep()`.

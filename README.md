@@ -7,10 +7,12 @@ Python, PyQt6 ve `fins` kütüphanesi ile inşa edilen bu araç; PLC IDE'lerinin
 ## Özellikler
 
 - 🔌 **FINS UDP ve TCP Desteği**: İsteğe bağlı seçilebilen UDP ve TCP protokolleri. Ağ yönlendirme (Destination Node/Net, Source Node/Net) ve FINS TCP Düğüm Anlaşması (Handshake) ile tam uyumlu, sağlam haberleşme altyapısı.
-- 🎨 **Endüstriyel Karanlık Tema (Dark Mode)**: Sysmac Studio ve VS Code gibi profesyonel yazılımlardan ilham alan, gözü yormayan modern arayüz tasarımı.
+- 🎨 **Endüstriyel Karanlık Tema (Dark Mode) ve Gelişmiş UI**: Sysmac Studio ve VS Code'dan ilham alan, koyu temalı kaydırma çubukları (`QScrollBar`) ve vektörel drop-down okları içeren modern arayüz.
+- 📐 **Ergonomik Grid Düzen & Geniş Başlangıç**: İki satırlı grid yapısına taşınan Bağlantı Paneli ve genişletilmiş başlangıç boyutları (`950x650` px) sayesinde hiçbir metin veya girdi alanı kırpılmaz.
+- 🏷️ **Renk Kodlu Durum Rozetleri (Badges)**: Bağlantı durumu ve Bool değerlerinin durumunu yansıtan modern, yuvarlatılmış köşeli renkli etiketler (Yeşil: Bağlı/True, Kırmızı: Bağlantı Yok/False, Turuncu: Bekleniyor).
 - ⏱️ **Otomatik Okuma (Auto-Read)**: Özelleştirilebilir milisaniye bazlı periyotlarla birden fazla değişkenin durumunu canlı olarak izleme yeteneği.
 - ⚡ **Hızlı Veri Düzenleme (Inline Editing)**: 
-  - Bool/Bit değerlerini anında kontrol edebilmek için atanmış `[TRUE]` / `[FALSE]` hızlı yazma butonları.
+  - Bool/Bit değerlerini anında kontrol edebilmek için atanmış, üzerine gelindiğinde yeşil/kırmızı yanan `[TRUE]` / `[FALSE]` hızlı yazma butonları.
   - Sayısal değerleri kutuya yazıp doğrudan `Enter` tuşuna basarak saniyesinde PLC'ye gönderme imkanı.
 - 🛠️ **Kapsamlı Veri Tipi Desteği**: `BOOL`, `WORD`, `DWORD`, `INT`, `DINT`, `REAL`, `LREAL`, `UINT` ve `UDINT` formatlarının otomatik olarak çözümlenmesi (parse edilmesi).
 - 🔢 **Özelleştirilebilir Veri Gösterimi**: Değerleri anlık olarak `Decimal`, `Onaltılık (Hex)` veya `İkili (Binary)` formatlarda görüntüleyebilme ve yazabilme özelliği.

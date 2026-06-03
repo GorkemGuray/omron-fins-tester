@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                                QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
                                QHeaderView, QComboBox, QMessageBox, QAbstractItemView, QCheckBox)
-from PyQt6.QtCore import pyqtSignal, QTimer
+from PyQt6.QtCore import pyqtSignal, QTimer, Qt
 import struct
 import ast
 
@@ -27,11 +27,14 @@ class VariablesPanel(QWidget):
         
         self.area_combo = QComboBox()
         self.area_combo.addItems(["D", "W", "C", "H"])
+        self.area_combo.setFixedWidth(60)
         form_layout.addWidget(QLabel("Alan:"))
         form_layout.addWidget(self.area_combo)
 
         self.address_input = QLineEdit("100")
         self.address_input.setPlaceholderText("Adres (Örn: 100)")
+        self.address_input.setMinimumWidth(100)
+        self.address_input.setMaximumWidth(140)
         form_layout.addWidget(QLabel("Adres:"))
         form_layout.addWidget(self.address_input)
 
@@ -49,12 +52,15 @@ class VariablesPanel(QWidget):
 
         self.type_combo = QComboBox()
         self.type_combo.addItems(list(self.type_mapping.keys()))
+        self.type_combo.setMinimumWidth(180)
+        self.type_combo.setMaximumWidth(220)
         form_layout.addWidget(QLabel("Tip:"))
         form_layout.addWidget(self.type_combo)
 
         add_btn = QPushButton("Değişken Ekle")
         add_btn.clicked.connect(self.on_add_clicked)
         form_layout.addWidget(add_btn)
+        form_layout.addStretch()
 
         layout.addLayout(form_layout)
 
@@ -66,7 +72,7 @@ class VariablesPanel(QWidget):
 
         poll_layout.addWidget(QLabel("Periyot (ms):"))
         self.period_input = QLineEdit("1000")
-        self.period_input.setFixedWidth(60)
+        self.period_input.setFixedWidth(70)
         poll_layout.addWidget(self.period_input)
         poll_layout.addStretch()
 
@@ -76,23 +82,30 @@ class VariablesPanel(QWidget):
         self.table = QTableWidget(0, 8)
         self.table.setHorizontalHeaderLabels(["Alan", "Adres", "Tip", "Format", "Okunan", "Değiştir", "Oku", "Sil"])
         
+        # Configure default row height to prevent clipping of padded cell widgets
+        self.table.verticalHeader().setDefaultSectionSize(36)
+        
         # Configure specific column widths
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents) # Alan
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)          # Adres
-        header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents) # Tip
+        
+        header.setSectionResizeMode(2, QHeaderView.ResizeMode.Fixed)            # Tip
+        self.table.setColumnWidth(2, 155)
         
         header.setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)            # Format
-        self.table.setColumnWidth(3, 95)
+        self.table.setColumnWidth(3, 105)
         
         header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)          # Okunan
-        header.setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)          # Değiştir
+        
+        header.setSectionResizeMode(5, QHeaderView.ResizeMode.Interactive)      # Değiştir
+        self.table.setColumnWidth(5, 140)
         
         header.setSectionResizeMode(6, QHeaderView.ResizeMode.Fixed)            # Oku
-        self.table.setColumnWidth(6, 70)
+        self.table.setColumnWidth(6, 80)
         
         header.setSectionResizeMode(7, QHeaderView.ResizeMode.Fixed)            # Sil
-        self.table.setColumnWidth(7, 70)
+        self.table.setColumnWidth(7, 80)
         
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         layout.addWidget(self.table)
@@ -121,7 +134,7 @@ class VariablesPanel(QWidget):
         self.table.setCellWidget(row, 3, format_combo)
 
         read_label = QLabel("-")
-        read_label.setMargin(4)
+        read_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.table.setCellWidget(row, 4, read_label)
 
         dtype = self.type_mapping.get(dtype, "w")
@@ -131,16 +144,25 @@ class VariablesPanel(QWidget):
             format_combo.setEnabled(False)
             
             modify_widget = QWidget()
+            modify_widget.setMinimumWidth(125)
             h_layout = QHBoxLayout(modify_widget)
             h_layout.setContentsMargins(2, 2, 2, 2)
             h_layout.setSpacing(2)
             
             btn_true = QPushButton("TRUE")
-            btn_true.setStyleSheet("background-color: #444444; color: #00FF00; font-weight: bold; border-radius: 2px;")
+            btn_true.setStyleSheet(
+                "QPushButton { background-color: #252526; color: #4caf50; border: 1px solid #3c3c3c; border-radius: 3px; font-weight: bold; padding: 2px; }"
+                "QPushButton:hover { background-color: #2e7d32; color: white; }"
+                "QPushButton:pressed { background-color: #1b5e20; }"
+            )
             btn_true.clicked.connect(lambda _, mw=modify_widget: self._emit_bool_write(mw, 1))
             
             btn_false = QPushButton("FALSE")
-            btn_false.setStyleSheet("background-color: #444444; color: #00FF00; font-weight: bold; border-radius: 2px;")
+            btn_false.setStyleSheet(
+                "QPushButton { background-color: #252526; color: #f44336; border: 1px solid #3c3c3c; border-radius: 3px; font-weight: bold; padding: 2px; }"
+                "QPushButton:hover { background-color: #c62828; color: white; }"
+                "QPushButton:pressed { background-color: #b71c1c; }"
+            )
             btn_false.clicked.connect(lambda _, mw=modify_widget: self._emit_bool_write(mw, 0))
             
             h_layout.addWidget(btn_true)
@@ -259,13 +281,21 @@ class VariablesPanel(QWidget):
             value_widget = self.table.cellWidget(row, 4)
             if isinstance(value_widget, QLabel):
                 if dtype == 'b':
+                    value_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
                     if value == 1:
-                        value_widget.setText("True")
-                        value_widget.setStyleSheet("background-color: #FF5555; color: white; font-weight: bold;")
+                        value_widget.setText("TRUE")
+                        value_widget.setStyleSheet(
+                            "background-color: #1b5e20; color: #c8e6c9; border: 1px solid #2e7d32; "
+                            "border-radius: 4px; padding: 2px 6px; font-weight: bold;"
+                        )
                     else:
-                        value_widget.setText("False")
-                        value_widget.setStyleSheet("background-color: #87CEFA; color: black; font-weight: bold;")
+                        value_widget.setText("FALSE")
+                        value_widget.setStyleSheet(
+                            "background-color: #b71c1c; color: #ffcdd2; border: 1px solid #d32f2f; "
+                            "border-radius: 4px; padding: 2px 6px; font-weight: bold;"
+                        )
                 else:
+                    value_widget.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
                     format_combo = self.table.cellWidget(row, 3)
                     fmt = format_combo.currentText()
                     formatted_str = self._format_value(value, fmt, dtype)
